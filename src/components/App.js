@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const VITE_API_KEY = "086d9464daddd3ef42fa4f97bcac9b6f";
-
 function App() {
   const [query, setQuery] = useState("");
   const [weather, setWeather] = useState(null);
 
+  // ✅ Put API key directly here
+  const API_KEY = "086d9464daddd3ef42fa4f97bcac9b6f";
+
+  // ✅ Use HTTPS for API calls to avoid mixed content errors on Vercel
   const search = async (e) => {
     if (e.key === "Enter") {
       try {
@@ -16,29 +18,32 @@ function App() {
         setWeather(response.data);
         setQuery("");
       } catch (error) {
-        alert("City not found. Please try again.");
+        alert("City not found or invalid API key.");
         console.error(error);
       }
     }
   };
 
-  const kelvinToFahrenheit = (k) => ((k - 273.15) * 9) / 5 + 32;
+  // ✅ Kelvin → Celsius or Fahrenheit conversion
+  const kelvinToCelsius = (k) => (k - 273.15).toFixed(1);
+  const kelvinToFahrenheit = (k) => (((k - 273.15) * 9) / 5 + 32).toFixed(1);
 
   return (
     <div className="app">
       <input
         type="text"
         className="search"
-        placeholder="Enter a city"
+        placeholder="Enter city name"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={search}
       />
+
       {weather && (
         <div className="weather">
           <div className="city">{weather.name}</div>
           <div className="temperature">
-            {Math.round(kelvinToFahrenheit(weather.main.temp))}°F
+            {kelvinToCelsius(weather.main.temp)}°C / {kelvinToFahrenheit(weather.main.temp)}°F
           </div>
           <div className="description">{weather.weather[0].description}</div>
           <div className="icon">
