@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const API_KEY = "086d9464daddd3ef42fa4f97bcac9b6f";
+const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
 function App() {
   const [query, setQuery] = useState("");
@@ -9,11 +9,16 @@ function App() {
 
   const search = async (e) => {
     if (e.key === "Enter") {
-      const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${API_KEY}`
-      );
-      setWeather(response.data);
-      setQuery("");
+      try {
+        const response = await axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${API_KEY}`
+        );
+        setWeather(response.data);
+        setQuery("");
+      } catch (error) {
+        alert("City not found. Please try again.");
+        console.error(error);
+      }
     }
   };
 
@@ -27,7 +32,7 @@ function App() {
         placeholder="Enter a city"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        onKeyPress={search}
+        onKeyDown={search}
       />
       {weather && (
         <div className="weather">
@@ -38,7 +43,7 @@ function App() {
           <div className="description">{weather.weather[0].description}</div>
           <div className="icon">
             <img
-              src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
+              src={`https://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
               alt={weather.weather[0].description}
             />
           </div>
